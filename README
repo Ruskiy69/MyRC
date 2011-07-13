@@ -1,9 +1,9 @@
-C - A simple, cross-platform, command-line IRC client.
+MyRC - A simple, cross-platform, command-line IRC client.
 
 Created By  :   George Kudrayvtsev (patience)
 Tested On   :   Windows 7 64-Bit, Ubuntu 9.10
-Version     :   0.1 Alpha
-Depends On  :   None
+Version     :   1.0 ALPHA
+Depends On  :   N/A
 
 USAGE: MyRC.exe [hostname] [port] [nick]
 
