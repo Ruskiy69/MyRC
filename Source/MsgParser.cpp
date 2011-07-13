@@ -226,6 +226,10 @@ bool MsgParser::parseOut(string& msg)
     {
         this->help();
     }
+    else if(msg.find("/exec") == 0)
+    {
+        system(msg.substr(6, -1).c_str());
+    }
     else if(msg.find("/quit") == 0)
     {
         if(msg.length() == 5)
@@ -270,6 +274,7 @@ void MsgParser::help()
 	this->ui->plog("/raw [IRC command]\t\t-Send a raw IRC command");
     this->ui->plog("/part <channel>\t\t-Leave a channel");
     this->ui->plog("/quit <Quit Message>\t-Quit the server, leaving an optional departure message");
+    this->ui->plog("/exec [Command]\t\t-Execute a command on your computer");
 	this->ui->plog("/help \t\t\t-This message");
 	this->ui->plog("\n\n");
 }
