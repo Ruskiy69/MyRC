@@ -1,27 +1,10 @@
-/************************************
-*               MyRC                *
-*                                   *
-*   Created By: George Kudrayvtsev  *
-*       (AKA patience and Ruskiy69) *
-*                                   *
-*   Finished On: 6/??/2011          *
-*                                   *
-*   Version: 0.1 Alpha              *
-*                                   *
-*   Tested On: Windows 7 64-Bit,    *
-*       Ubuntu 9.10, BackTrack 4    *
-*                                   *
-*   License: Creative Commons       *
-*                                   *
-*   (C) Copyright Kudrayvtsev 2011  *
-*                                   *
-*************************************/
+/// MyRC: A simple, cross-platform, command-line IRC client.
 
 #include <string>
 
 #include "AllMighty.h"
 
-#define VERSION_STR         "0.1 Alpha"
+#define VERSION_STR "1.0 Alpha"
 
 using namespace std;
 
@@ -41,7 +24,7 @@ int main(int argc, char* argv[])
         /* Set hostname, port, and nick based on args */
         parse_args(argc, argv);
 
-        AllMighty  master;
+        AllMighty master;
 
         if(hostname == DEFAULT_HOSTNAME && port == DEFAULT_IRC_PORT)
         {
@@ -137,53 +120,53 @@ void usage()
 
 void parse_args(int argc, char* argv[])
 {
-    if(argc > 4)
-        usage();
-
-    if(argc == 2 && ((strncmp(argv[1], "--help", 6) == 0)
-        || (strncmp(argv[1], "-h", 2) == 0)))
+    switch (argc)
     {
-        usage();
-    }
-
-    if(argc == 4)
-    {
+    case 4:
         hostname    = argv[1];
         port        = argv[2];
         nick        = argv[3];
 
         if(hostname == "NULL")
             hostname    = DEFAULT_HOSTNAME;
+
         if(port        == "NULL")
             port        = DEFAULT_IRC_PORT;
-    }
-    else if(argc == 3)
-    {
+
+        break;
+
+    case 3:
         hostname    = argv[1];
         port        = argv[2];
         nick        = DEFAULT_NICK;
 
         if(hostname == "NULL" || port == "NULL")
             usage();
+        break;
 
-    }
-    else if(argc == 2)
-    {
+    case 2: {
+        std::string arg(argv[1]);
+        if (arg == "--help" || arg == "-h")
+            usage();
+
         hostname    = argv[1];
         port        = DEFAULT_IRC_PORT;
         nick        = DEFAULT_NICK;
 
         if(hostname == "NULL")
             usage();
+
+        break;
     }
-    else if(argc == 1)
-    {
+
+    case 1:
         hostname    = DEFAULT_HOSTNAME;
         port        = DEFAULT_IRC_PORT;
         nick        = DEFAULT_NICK;
-    }
-    else
-    {
+        break;
+
+    default:
         usage();
+        break;
     }
 }

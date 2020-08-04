@@ -19,8 +19,7 @@
 *            to false.                               *
 *                                                    *
 *****************************************************/
-#ifndef ERROR_HANDLER_H
-#define ERROR_HANDLER_H
+#pragma once
 
 #ifdef _WIN32
 #ifndef WS2_INCLUDED
@@ -32,5 +31,3 @@
 #endif // _WIN32
 
 void handleError(const char* errorMessage, const bool quit = true);
-
-#endif // ERROR_HANDLER_H

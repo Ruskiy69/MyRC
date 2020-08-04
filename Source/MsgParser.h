@@ -1,5 +1,4 @@
-#ifndef MSG_PARSER_H
-#define MSG_PARSER_H
+#pragma once
 
 #include <sstream>
 #include <string>
@@ -11,7 +10,7 @@
 #ifdef  _DEBUG
 #define Debug(x)    cout << "[DEBUG] " << x << endl;
 #else
-#define Debug(x)            
+#define Debug(x)
 #endif // _DEBUG
 
 #define END     "\r\n"
@@ -38,7 +37,7 @@ public:
     /*
         Parses the outgoing message, and creates a stringstream
         with the properly formatted raw IRC message. An un-elegant
-        solution to the dilemma of setting up a new socket is 
+        solution to the dilemma of setting up a new socket is
         solved by returning true when the user wants to "/connect".
         False is return otherwise.
     */
@@ -62,5 +61,3 @@ private:
     string channel;
     string nick;
 };
-
-#endif // MSG_PARSER_H

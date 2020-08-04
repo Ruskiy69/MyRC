@@ -45,7 +45,7 @@ void Socket::connect(const char* hostname, const char* port)
         handleError("Failed to get address information.\nCheck your internet connection and try again!");
     }
 
-    for(this->serv_info = tmp; this->serv_info != NULL; this->serv_info = this->serv_info->ai_next)
+    for(this->serv_info = tmp; this->serv_info != nullptr; this->serv_info = this->serv_info->ai_next)
     {
         this->sock = socket(this->serv_info->ai_family, this->serv_info->ai_socktype, this->serv_info->ai_protocol);
         if(this->sock == -1)
@@ -65,7 +65,7 @@ void Socket::connect(const char* hostname, const char* port)
         break;
     }
 
-    if(this->serv_info == NULL)
+    if(this->serv_info == nullptr)
     {
         char* error = new char[256];
 
@@ -96,19 +96,19 @@ void Socket::bind(const char* host, const char* port)
         handleError("Bind() only works for server sockets!");
     }
 
-    if(host != NULL)
+    if(host != nullptr)
         this->hints.ai_flags    = AI_PASSIVE;
 
     struct addrinfo* tmp;
 
-    int status = getaddrinfo(NULL, port, &this->hints, &tmp);
+    int status = getaddrinfo(nullptr, port, &this->hints, &tmp);
 
     if(status != 0)
     {
         handleError("Failed to get address information.\nCheck your internet connection and try again!");
     }
 
-    for(this->serv_info = tmp; this->serv_info != NULL; this->serv_info = this->serv_info->ai_next)
+    for(this->serv_info = tmp; this->serv_info != nullptr; this->serv_info = this->serv_info->ai_next)
     {
         this->sock = socket(this->serv_info->ai_family, this->serv_info->ai_socktype, this->serv_info->ai_protocol);
         if(this->sock == -1)
@@ -128,7 +128,7 @@ void Socket::bind(const char* host, const char* port)
         break;
     }
 
-    if(this->serv_info == NULL)
+    if(this->serv_info == nullptr)
     {
         char* error = new char[256];
 
@@ -159,13 +159,13 @@ void Socket::sendall(const char* data)
     while(total < to_send)
     {
         if(this->socket_type == TCP_CLIENT || this->socket_type == UDP_CLIENT)
-            sent = send(this->sock, data + sent, to_send, NULL);
+            sent = send(this->sock, data + sent, to_send, 0);
         else
         {
             if(this->client_sock == 0)
                 handleError("Not connected to a client!", false);
             else
-                sent = send(this->client_sock, data + sent, to_send, NULL);
+                sent = send(this->client_sock, data + sent, to_send, 0);
         }
 
         if(sent == 0)
@@ -181,7 +181,7 @@ void Socket::sendall(const char* data)
 
 void Socket::sendto(const char* hostname, const char* port, const char* data, const int size)
 {
-    ::sendto(this->sock, data, size, NULL, this->serv_info->ai_addr, this->serv_info->ai_addrlen);
+    ::sendto(this->sock, data, size, 0, this->serv_info->ai_addr, this->serv_info->ai_addrlen);
 }
 
 char* Socket::recv(const int bufsize)
@@ -190,17 +190,19 @@ char* Socket::recv(const int bufsize)
     int recvd    = 0;
 
     if(this->socket_type == TCP_CLIENT)
-        recvd = ::recv(this->sock, buffer, bufsize, NULL);
+        recvd = ::recv(this->sock, buffer, bufsize, 0);
     else if(this->socket_type == UDP_CLIENT)
         handleError("Use recvfrom() for UDP sockets!");
     else
-        recvd = ::recv(this->client_sock, buffer, bufsize, NULL);
+        recvd = ::recv(this->client_sock, buffer, bufsize, 0);
 
     if(recvd == 0)
-        return NULL;
+    {
+        delete[] buffer;
+        return nullptr;
+    }
 
-    buffer[recvd] = 0;
-
+    buffer[recvd] = '\0';
     return buffer;
 }
 
@@ -209,13 +211,13 @@ void Socket::recv_into(char* buffer, const int size)
     int bytes_recvd = 0;
 
     if(this->socket_type == TCP_CLIENT || this->socket_type == UDP_CLIENT)
-        bytes_recvd = ::recv(this->sock, buffer, size, NULL);
+        bytes_recvd = ::recv(this->sock, buffer, size, 0);
     else
     {
         if(this->client_sock == 0)
             handleError("No client connected!");
         else
-            bytes_recvd = ::recv(this->client_sock, buffer, size, NULL);
+            bytes_recvd = ::recv(this->client_sock, buffer, size, 0);
     }
 
     buffer[bytes_recvd] = 0;
@@ -233,13 +235,12 @@ char* Socket::nonBlockRecv(const int bufsize)
     timeout.tv_sec  = this->timeout;
     timeout.tv_usec = 0;
 
-    retval = select(this->getSock() + 1, &recv_fds, NULL, NULL, &timeout);
+    retval = select(this->getSock() + 1, &recv_fds, nullptr, nullptr, &timeout);
 
     if(retval == -1 || retval == 0)
-        return NULL;
+        return nullptr;
 
-    else
-        return this->recv(bufsize);
+    return this->recv(bufsize);
 }
 
 void Socket::setTimeOut(const int timeout)
@@ -256,7 +257,8 @@ char* Socket::getpeername()
     struct sockaddr_in* addr = (sockaddr_in*)&this->client_addr;
     port = ntohs(addr->sin_port);
     inet_ntop(AF_INET, &addr->sin_addr, hostname, sizeof hostname);
-    char* peername = new char[INET_ADDRSTRLEN + 5];
+
+    static char peername[INET_ADDRSTRLEN + 5];
 
 #ifdef _WIN32
     sprintf_s(peername, strlen(peername), "%s:%d", hostname, port);
@@ -265,7 +267,6 @@ char* Socket::getpeername()
 #endif // _WIN32
 
     return peername;
-    delete[] peername;
 }
 
 void Socket::shutdown(const int how)
@@ -285,6 +286,6 @@ int Socket::getClientSock()
 {
     if(this->socket_type == TCP_SERVER || this->socket_type == UDP_SERVER)
         return this->client_sock;
-    else
-        return -1;
+
+    return -1;
 }

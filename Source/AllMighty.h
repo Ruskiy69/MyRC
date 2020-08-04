@@ -1,5 +1,4 @@
-#ifndef ALL_MIGHTY_H
-#define ALL_MIGHTY_H
+#pragma once
 
 #include <sstream>
 #include <string>
@@ -35,5 +34,3 @@ private:
     UI*         ui;
     MsgParser*  parser;
 };
-
-#endif // ALL_MIGHTY_H

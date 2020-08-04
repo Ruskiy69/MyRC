@@ -34,6 +34,7 @@ public:
     string  prompt(string& prompt);
 
     void    raw(char* str){cout << str;}
+    void    raw(const string& str){cout << str;}
 };
 
 #endif // UI_H
